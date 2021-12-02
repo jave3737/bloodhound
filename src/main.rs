@@ -1,6 +1,7 @@
 use clap::{App, Arg};
 use std::collections::BTreeMap;
 use std::io::Write;
+use std::env;
 
 const CONFIG_FILE: &str = "config.yaml";
 
@@ -33,10 +34,15 @@ fn main() {
         }
     }
 
-    if !std::path::Path::new(CONFIG_FILE).exists() {
-        eprintln!(
-            "No {} found! You must create it first using the config option",
-            CONFIG_FILE
-        );
+    //check to see if the PINBOARD_API env variable has been set
+    let env_api_token = env::var("PINBOARD_API").unwrap_or("none".to_string());
+    println!("api token: {}", env_api_token);
+     
+    if env_api_token.to_owned().eq("none") {
+        //pull api from CONFIG_FILE
+        eprintln!("Error: Either set up an environment variable PINBOARD_API with your token or run \"config\" option");
+    }else {
+        println!("haha");
     }
+
 }
