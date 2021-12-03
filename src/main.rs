@@ -8,7 +8,11 @@ const CONFIG_FILE: &str = "config.yaml";
 const NUMBER_OF_ARG: i32 = 1;
 
 
-fn parse_option(m: &mut HashMap<&str,&str>) {
+fn parse_option(map: &mut HashMap<String,String>, matches: clap::ArgMatches) {
+    if let Some(s) = matches.value_of("config") {
+        let temp = s.to_owned();
+        map.insert("config".to_string(),temp);
+    }
 }
 
 fn use_env_var() -> (bool, String) {
@@ -25,7 +29,7 @@ fn use_env_var() -> (bool, String) {
 }
 
 fn main() {
-    let matches = App::new("Bloodhound")
+    let mut matches = App::new("Bloodhound")
         .version("1.0")
         .author("Alejandro Miranda <alejandro.miranda@hey.com>")
         .about("Dig through pinboard bookmarks")
@@ -38,7 +42,8 @@ fn main() {
         )
         .get_matches();
 
-    let mut map:HashMap<&str,&str> = HashMap::new();
+    let mut map:HashMap<String,String> = HashMap::new();
+    parse_option(&mut map, matches);
 
     //check if we are going to automatically use the environment variable
     let (env_status, env_string) = use_env_var();
