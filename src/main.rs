@@ -1,4 +1,8 @@
+extern crate log;
+
 use clap::{App, Arg};
+use log::Level::Info;
+use log::{info, log_enabled};
 use std::collections::BTreeMap;
 use std::collections::HashMap;
 use std::env;
@@ -7,11 +11,14 @@ use std::io::Write;
 const CONFIG_FILE: &str = "config.yaml";
 const NUMBER_OF_ARG: i32 = 1;
 
-
-fn parse_option(map: &mut HashMap<String,String>, matches: clap::ArgMatches) {
+fn parse_option(map: &mut HashMap<String, String>, matches: clap::ArgMatches) {
     if let Some(s) = matches.value_of("config") {
         let temp = s.to_owned();
-        map.insert("config".to_string(),temp);
+        map.insert("config".to_string(), temp);
+    }
+
+    if log_enabled!(Info) {
+        info!("hello");
     }
 }
 
@@ -29,6 +36,8 @@ fn use_env_var() -> (bool, String) {
 }
 
 fn main() {
+    env_logger::init();
+
     let mut matches = App::new("Bloodhound")
         .version("1.0")
         .author("Alejandro Miranda <alejandro.miranda@hey.com>")
@@ -42,7 +51,7 @@ fn main() {
         )
         .get_matches();
 
-    let mut map:HashMap<String,String> = HashMap::new();
+    let mut map: HashMap<String, String> = HashMap::new();
     parse_option(&mut map, matches);
 
     //check if we are going to automatically use the environment variable
