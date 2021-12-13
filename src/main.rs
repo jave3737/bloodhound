@@ -6,9 +6,10 @@ use std::collections::BTreeMap;
 use std::collections::HashMap;
 use std::env;
 use std::io::Write;
-
+use reqwest::blocking::Client;
 
 const CONFIG_FILE: &str = "config.yaml";
+const PINBOARD_URL: &str = "https://api.pinboard.in/v1/"
 
 fn parse_option(map: &mut HashMap<String, String>, matches: clap::ArgMatches) {
     if let Some(s) = matches.value_of("config") {
@@ -33,7 +34,7 @@ fn create_config_file(map: HashMap<String, String>) -> Result<bool, anyhow::Erro
 }
 
 fn use_env_var() -> (bool, String) {
-    let mut status = false;
+    let status:bool;
     let env_api_token = env::var("PINBOARD_API").unwrap_or("none".to_string());
 
     if env_api_token.to_owned().eq("none") {
@@ -42,7 +43,7 @@ fn use_env_var() -> (bool, String) {
         status = true;
     }
 
-    if log_enabled!(Info) && status == true {
+    if log_enabled!(Info) && status == true{
         info!("Found api token via environment variable: {}", env_api_token);
         info!("Will NOT be using api token specified in {}", CONFIG_FILE);
     }
@@ -72,6 +73,9 @@ fn main() {
     //check if we are going to automatically use the environment variable
     let (_env_status, _env_string) = use_env_var();
 
-    create_config_file(map).unwrap();
+    create_config_file(map).unwrap();    
+
+    let client = Client::new();
+
 
 }
