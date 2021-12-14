@@ -1,3 +1,4 @@
 config.yaml
 tags
 /target
+*.sublime-workspace

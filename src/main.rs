@@ -1,18 +1,43 @@
+extern crate log;
 use clap::{App, Arg};
+use log::Level::Info;
+use log::{info, log_enabled};
+use reqwest::Request;
 use std::collections::BTreeMap;
 use std::collections::HashMap;
 use std::env;
 use std::io::Write;
+use reqwest::blocking::Client;
+use reqwest::header::USER_AGENT;
+use reqwest::{Url,Method};
 
 const CONFIG_FILE: &str = "config.yaml";
-const NUMBER_OF_ARG: i32 = 1;
+const PINBOARD_URL: &str = "https://api.pinboard.in/v1/";
 
+fn parse_option(map: &mut HashMap<String, String>, matches: clap::ArgMatches) {
+    if let Some(s) = matches.value_of("config") {
+        let temp = s.to_owned();
+        map.insert("config".to_string(), temp);
+    }
 
-fn parse_option(m: &mut HashMap<&str,&str>) {
+    if log_enabled!(Info) {
+        for (key, val) in map.iter() {
+            info!("Option: {} Value: {}", key, val);
+        }
+    }
+}
+
+fn create_config_file(map: HashMap<String, String>) -> Result<bool, anyhow::Error> {
+    let mut bt_map = BTreeMap::new();
+     bt_map.insert(ToString::to_string(&"api"), map.contains_key("config"));
+     let mut file = std::fs::File::create(CONFIG_FILE)?;
+     let serial_map = serde_yaml::to_string(&bt_map)?;
+     file.write_all(serial_map.as_bytes())?;
+    Ok(true)
 }
 
 fn use_env_var() -> (bool, String) {
-    let mut status = false;
+    let status:bool;
     let env_api_token = env::var("PINBOARD_API").unwrap_or("none".to_string());
 
     if env_api_token.to_owned().eq("none") {
@@ -21,11 +46,18 @@ fn use_env_var() -> (bool, String) {
         status = true;
     }
 
+    if log_enabled!(Info) && status == true{
+        info!("Found api token via environment variable: {}", env_api_token);
+        info!("Will NOT be using api token specified in {}", CONFIG_FILE);
+    }
+
     return (status, env_api_token);
 }
 
 fn main() {
-    let matches = App::new("Bloodhound")
+    env_logger::init();
+
+    let  matches = App::new("Bloodhound")
         .version("1.0")
         .author("Alejandro Miranda <alejandro.miranda@hey.com>")
         .about("Dig through pinboard bookmarks")
@@ -38,39 +70,19 @@ fn main() {
         )
         .get_matches();
 
-    let mut map:HashMap<&str,&str> = HashMap::new();
+    let mut map: HashMap<String, String> = HashMap::new();
+    parse_option(&mut map, matches);
 
     //check if we are going to automatically use the environment variable
-    let (env_status, env_string) = use_env_var();
-    if env_status == true {
-        println!("api token: {}", env_string);
-    } else if env_status == false {
-    }
+    let (_env_status, env_string) = use_env_var();
 
-    //    if let Some(res) = matches.value_of("config") {
-    //        check_api(res);
-    //        println!("Creating/Overwriting {}", CONFIG_FILE);
-    //        match std::fs::File::create(CONFIG_FILE) {
-    //            Ok(mut o) => {
-    //                let mut map = BTreeMap::new();
-    //                map.insert("api".to_string(), res);
-    //                let serial_map = serde_yaml::to_string(&map).expect("Error");
-    //                o.write_all(serial_map.as_bytes()).expect("Error");
-    //            }
-    //            Err(e) => {
-    //                eprintln!("Error creating {} due to {}", CONFIG_FILE, e);
-    //            }
-    //        }
-    //    }
-    //
-    //    //check to see if the PINBOARD_API env variable has been set
-    //    let env_api_token = env::var("PINBOARD_API").unwrap_or("none".to_string());
-    //    println!("api token: {}", env_api_token);
-    //
-    //    if env_api_token.to_owned().eq("none") {
-    //        //pull api from CONFIG_FILE
-    //        eprintln!("Error: Either set up an environment variable PINBOARD_API with your token or run \"config\" option");
-    //    }else {
-    //        println!("haha");
-    //    }
+    //create the file if env_status = false, config doenst exists, and the create config option was set
+    //create_config_file(map).unwrap();    
+
+    let client = Client::new();
+    let url = reqwest::Url::parse(PINBOARD_URL).unwrap();
+    println!("{:?}", url);
+    let req = client.request(Method::GET, url).bearer_auth(env_string);
+    println!("{:?}", &req);
+
 }
