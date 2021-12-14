@@ -12,7 +12,7 @@ use reqwest::header::USER_AGENT;
 use reqwest::{Url,Method};
 
 const CONFIG_FILE: &str = "config.yaml";
-const PINBOARD_URL: &str = "https://api.pinboard.in/v1/";
+const PINBOARD_URL: &str = "https://api.pinboard.in/v1/tags/get";
 
 fn parse_option(map: &mut HashMap<String, String>, matches: clap::ArgMatches) {
     if let Some(s) = matches.value_of("config") {
@@ -84,5 +84,8 @@ fn main() {
     println!("{:?}", url);
     let req = client.request(Method::GET, url).bearer_auth(env_string);
     println!("{:?}", &req);
+    let res = req.send().unwrap();
+    println!("{:?}", &res.status());
+
 
 }
