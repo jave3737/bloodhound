@@ -2,14 +2,17 @@ extern crate log;
 use clap::{App, Arg};
 use log::Level::Info;
 use log::{info, log_enabled};
+use reqwest::Request;
 use std::collections::BTreeMap;
 use std::collections::HashMap;
 use std::env;
 use std::io::Write;
 use reqwest::blocking::Client;
+use reqwest::header::USER_AGENT;
+use reqwest::{Url,Method};
 
 const CONFIG_FILE: &str = "config.yaml";
-const PINBOARD_URL: &str = "https://api.pinboard.in/v1/"
+const PINBOARD_URL: &str = "https://api.pinboard.in/v1/";
 
 fn parse_option(map: &mut HashMap<String, String>, matches: clap::ArgMatches) {
     if let Some(s) = matches.value_of("config") {
@@ -71,11 +74,15 @@ fn main() {
     parse_option(&mut map, matches);
 
     //check if we are going to automatically use the environment variable
-    let (_env_status, _env_string) = use_env_var();
+    let (_env_status, env_string) = use_env_var();
 
-    create_config_file(map).unwrap();    
+    //create the file if env_status = false, config doenst exists, and the create config option was set
+    //create_config_file(map).unwrap();    
 
     let client = Client::new();
-
+    let url = reqwest::Url::parse(PINBOARD_URL).unwrap();
+    println!("{:?}", url);
+    let req = client.request(Method::GET, url).bearer_auth(env_string);
+    println!("{:?}", &req);
 
 }
