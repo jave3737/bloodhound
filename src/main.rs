@@ -1,18 +1,34 @@
 extern crate log;
+use anyhow::{Error,anyhow};
 use clap::{App, Arg};
 use log::Level::Info;
 use log::{info, log_enabled};
 use reqwest::blocking::Client;
 use reqwest::header::USER_AGENT;
-use reqwest::Request;
+use reqwest::{Request, StatusCode};
 use reqwest::{Method, Url};
 use std::collections::BTreeMap;
 use std::collections::HashMap;
-use std::env;
+use std::{env, result};
 use std::io::Write;
 
 const CONFIG_FILE: &str = "config.yaml";
 const PINBOARD_URL: &str = "https://api.pinboard.in/v1";
+
+fn verify_api_connection(client:Client, token_string:&str) -> Result<(),anyhow::Error> {
+    let mut url_string = String::new();
+    url_string = format!("{}/user/api_token/?auth_token={}",PINBOARD_URL,token_string);
+    let url = reqwest::Url::parse(&url_string)?;
+    let req = client.request(Method::GET, url);
+    let res = req.send()?;
+    info!("Formed api URL: {}",url_string);
+    if res.status().eq(&StatusCode::OK) {
+        info!("Response: {:}",res.text().unwrap());
+        Ok(())
+    } else {
+        Err(anyhow!("Issues verifying api")) 
+    }
+}
 
 fn parse_option(map: &mut HashMap<String, String>, matches: clap::ArgMatches) {
     if let Some(s) = matches.value_of("config") {
