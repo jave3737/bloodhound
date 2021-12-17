@@ -77,22 +77,16 @@ fn main() {
     parse_option(&mut map, matches);
 
     //check if we are going to automatically use the environment variable
-    let (_env_status, env_string) = use_env_var();
+    let (use_env_var, token_string) = use_env_var();
 
     //create the file if env_statu s= false, config doenst exists, and the create config option was set
     //create_config_file(map).unwrap();
 
     let client = Client::new();
-    let mut token_check = String::new();
-    token_check = format!("{}/user/api_token/?auth_token={}",PINBOARD_URL,env_string);
-    println!("{:?}", token_check);
-
-    let url = reqwest::Url::parse(&token_check).unwrap();  
-    println!("{:?}", url);
-    let req = client.request(Method::GET, url);
-    println!("{:?}", &req);
-    let res = req.send().unwrap();
-    println!("{:?}", &res.status());
-    println!("{:?}", &res.text().unwrap());
+    verify_api_connection(client, token_string.as_str()).unwrap();
+    // match verify_api_connection(client, "token_string") {
+    //     Ok(_) => todo!(),
+    //     Err(_) => todo!(),
+    // }
 }
 
