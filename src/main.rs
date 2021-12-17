@@ -12,7 +12,7 @@ use std::env;
 use std::io::Write;
 
 const CONFIG_FILE: &str = "config.yaml";
-const PINBOARD_URL: &str = "https://api.pinboard.in/v1/tags/get";
+const PINBOARD_URL: &str = "https://api.pinboard.in/v1";
 
 fn parse_option(map: &mut HashMap<String, String>, matches: clap::ArgMatches) {
     if let Some(s) = matches.value_of("config") {
@@ -79,14 +79,20 @@ fn main() {
     //check if we are going to automatically use the environment variable
     let (_env_status, env_string) = use_env_var();
 
-    //create the file if env_status = false, config doenst exists, and the create config option was set
+    //create the file if env_statu s= false, config doenst exists, and the create config option was set
     //create_config_file(map).unwrap();
 
     let client = Client::new();
-    let url = reqwest::Url::parse(PINBOARD_URL).unwrap();
+    let mut token_check = String::new();
+    token_check = format!("{}/user/api_token/?auth_token={}",PINBOARD_URL,env_string);
+    println!("{:?}", token_check);
+
+    let url = reqwest::Url::parse(&token_check).unwrap();  
     println!("{:?}", url);
-    let req = client.request(Method::GET, url).bearer_auth(env_string);
+    let req = client.request(Method::GET, url);
     println!("{:?}", &req);
     let res = req.send().unwrap();
     println!("{:?}", &res.status());
+    println!("{:?}", &res.text().unwrap());
 }
+
