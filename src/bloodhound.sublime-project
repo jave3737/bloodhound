@@ -1,0 +1,18 @@
+{
+	"folders":
+	[
+		{
+			"path": "C:\\projects\\bloodhound",
+		}
+	],
+	"settings":
+	{
+		"LSP":
+		{
+			"rust-analyzer":
+			{
+				"enabled": true,
+			},
+		},
+	},
+}
