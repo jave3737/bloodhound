@@ -2,3 +2,4 @@ config.yaml
 tags
 /target
 *.sublime-workspace
+*.rlib

@@ -10,9 +10,11 @@ use std::collections::HashMap;
 use std::env;
 use std::io::Write;
 use std::path::Path;
+use crate::pinboard::PINBOARD_URL;
+
+mod pinboard;
 
 const CONFIG_FILE: &str = "config.yaml";
-const PINBOARD_URL: &str = "https://api.pinboard.in/v1";
 
 fn verify_api_connection(client: Client, token_string: &str) -> Result<(), anyhow::Error> {
     let url_string = format!(
