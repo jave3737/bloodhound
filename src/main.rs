@@ -89,7 +89,7 @@ fn main() {
     let (_use_env_var, token_string) = use_env_var();
 
     let pinboard = Api::new(token_string);
-    if !pinboard.test() {
+    if let Err(e) = pinboard.verify_api_connection(){
         eprintln!("There seems to be an issue communicating with pinboard.in.\nMake sure you have configured your token correctly");
     }
 }
