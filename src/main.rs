@@ -1,47 +1,25 @@
-extern crate log;
-use anyhow::anyhow;
 use clap::{App, Arg};
-use log::Level::Info;
-use log::{info, log_enabled};
-use reqwest::blocking::Client;
-use reqwest::{Method, StatusCode};
 use std::collections::BTreeMap;
 use std::collections::HashMap;
 use std::env;
 use std::io::Write;
 use std::path::Path;
+use crate::pinboard::*;
+
+mod pinboard;
 
 const CONFIG_FILE: &str = "config.yaml";
-const PINBOARD_URL: &str = "https://api.pinboard.in/v1";
-
-fn verify_api_connection(client: Client, token_string: &str) -> Result<(), anyhow::Error> {
-    let url_string = format!(
-        "{}/user/api_token/?auth_token={}",
-        PINBOARD_URL, token_string
-    )
-    .to_string();
-    let url = reqwest::Url::parse(&url_string)?;
-    let req = client.request(Method::GET, url);
-    let res = req.send()?;
-    info!("Formed api URL: {}", url_string);
-    if res.status().eq(&StatusCode::OK) {
-        info!("Response: {:}", res.text().unwrap());
-        Ok(())
-    } else {
-        Err(anyhow!("Issues verifying api"))
-    }
-}
 
 fn parse_option(map: &mut HashMap<String, String>, matches: clap::ArgMatches) {
     if let Some(s) = matches.value_of("config") {
         let temp = s.to_owned();
         map.insert("config".to_string(), temp);
     }
-    if log_enabled!(Info) {
-        for (key, val) in map.iter() {
-            info!("Option: {} Value: {}", key, val);
-        }
-    }
+    // if log_enabled!(Info) {
+    //     for (key, val) in map.iter() {
+    //         info!("Option: {} Value: {}", key, val);
+    //     }
+    // }
 }
 
 fn create_config_file(map: HashMap<String, String>) -> Result<bool, anyhow::Error> {
@@ -65,13 +43,13 @@ fn use_env_var() -> (bool, String) {
     } else {
         status = true;
     }
-    if log_enabled!(Info) && status == true {
-        info!(
-            "Found api token via environment variable: {}",
-            env_api_token
-        );
-        info!("Will NOT be using api token specified in {}", CONFIG_FILE);
-    }
+    // if log_enabled!(Info) && status == true {
+    //     info!(
+    //         "Found api token via environment variable: {}",
+    //         env_api_token
+    //     );
+    //     info!("Will NOT be using api token specified in {}", CONFIG_FILE);
+    //}
     return (status, env_api_token);
 }
 
@@ -108,7 +86,10 @@ fn main() {
         }
     }
 
-    let (use_env_var, token_string) = use_env_var();
-    let client = Client::new();
-    verify_api_connection(client, token_string.as_str()).unwrap();
+    let (_use_env_var, token_string) = use_env_var();
+
+    let pinboard = Api::new(token_string);
+    if !pinboard.test() {
+        eprintln!("There seems to be an issue communicating with pinboard.in.\nMake sure you have configured your token correctly");
+    }
 }
