@@ -3,7 +3,8 @@ use anyhow::anyhow;
 use log::Level::Info;
 use log::{info, log_enabled};
 use reqwest::blocking::Client;
-use reqwest::{Method, StatusCode};
+use reqwest::{Method, StatusCode, Url};
+use serde_json::Value;
 
 pub const PINBOARD_URL: &str = "https://api.pinboard.in/v1/";
 
@@ -21,22 +22,20 @@ impl Api {
     }
 
     pub fn verify_api_connection(&self) -> Result<(), anyhow::Error> {
-    	let base = reqwest::Url::parse(PINBOARD_URL)?;
-		let mut url = base.join("user/api_token/")?;
-    	url.query_pairs_mut().append_pair("auth_token", self.token.as_str());
-    	url.query_pairs_mut().append_pair("format", "json");
-        let req = self.client.request(Method::GET, url.as_str());
-        let res = req.send()?;
-        println!("{:?}", res.text()?);
-        // let value = serde_json::from_str(res.text()?.as_slice())?;
-        // println!("{:?}", v["result"]);
+        let url = self.create_url("user/api_token/")?;
+        let request = self.client.request(Method::GET, url.as_str());
+        let response = request.send()?;
+        let response_text = response.text()?;
+        let json_parse: Value = serde_json::from_str(&response_text.as_str())?;
+        println!("{:?}", json_parse["result"]);
         todo!()
-        // info!("Formed api URL: {}", url_string);
-        // if res.status().eq(&StatusCode::OK) {
-        //     info!("Response: {:}", res.text().unwrap());
-        //     Ok(())
-        // } else {
-        //     Err(anyhow!("Issues verifying api"))
-        // }
+    }
+
+    pub fn create_url(&self, endpoint_address: &str) -> Result<Url, anyhow::Error> {
+        let base = reqwest::Url::parse(PINBOARD_URL)?;
+        let mut url = base.join(endpoint_address)?;
+        url.query_pairs_mut().append_pair("auth_token", self.token.as_str());
+        url.query_pairs_mut().append_pair("format", "json");
+        Ok(url)
     }
 }
