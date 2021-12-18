@@ -1,26 +1,25 @@
 extern crate log;
-use anyhow::{anyhow, Error};
+use anyhow::anyhow;
 use clap::{App, Arg};
 use log::Level::Info;
 use log::{info, log_enabled};
 use reqwest::blocking::Client;
-use reqwest::header::USER_AGENT;
-use reqwest::{Method, Url};
-use reqwest::{Request, StatusCode};
+use reqwest::{Method, StatusCode};
 use std::collections::BTreeMap;
 use std::collections::HashMap;
+use std::env;
 use std::io::Write;
-use std::{env, result};
+use std::path::Path;
 
 const CONFIG_FILE: &str = "config.yaml";
 const PINBOARD_URL: &str = "https://api.pinboard.in/v1";
 
 fn verify_api_connection(client: Client, token_string: &str) -> Result<(), anyhow::Error> {
-    let mut url_string = String::new();
-    url_string = format!(
+    let url_string = format!(
         "{}/user/api_token/?auth_token={}",
         PINBOARD_URL, token_string
-    );
+    )
+    .to_string();
     let url = reqwest::Url::parse(&url_string)?;
     let req = client.request(Method::GET, url);
     let res = req.send()?;
@@ -46,11 +45,15 @@ fn parse_option(map: &mut HashMap<String, String>, matches: clap::ArgMatches) {
 }
 
 fn create_config_file(map: HashMap<String, String>) -> Result<bool, anyhow::Error> {
-    let mut bt_map = BTreeMap::new();
-    bt_map.insert(ToString::to_string(&"api"), map.contains_key("config"));
-    let mut file = std::fs::File::create(CONFIG_FILE)?;
-    let serial_map = serde_yaml::to_string(&bt_map)?;
-    file.write_all(serial_map.as_bytes())?;
+    if Path::new(CONFIG_FILE).exists() == true {
+        println!("{} already exists, will not overwrite", CONFIG_FILE);
+    } else {
+        let mut bt_map = BTreeMap::new();
+        bt_map.insert(ToString::to_string(&"api"), map.contains_key("config"));
+        let mut file = std::fs::File::create(CONFIG_FILE)?;
+        let serial_map = serde_yaml::to_string(&bt_map)?;
+        file.write_all(serial_map.as_bytes())?;
+    }
     Ok(true)
 }
 
@@ -85,17 +88,27 @@ fn main() {
                 .takes_value(true)
                 .help("Create a config.yaml that stores your api token"),
         )
+        .arg(
+            Arg::with_name("test")
+                .short("t")
+                .long("test")
+                .takes_value(false)
+                .help("Test your configuration"),
+        )
         .get_matches();
-    let mut map: HashMap<String, String> = HashMap::new();
-    parse_option(&mut map, matches);
-    //check if we are going to automatically use the environment variable
+
+    // parse command line options
+    let mut command_line_options: HashMap<String, String> = HashMap::new();
+    parse_option(&mut command_line_options, matches);
+
+    // user requested to create config file
+    if command_line_options.contains_key("config") == true {
+        if let Err(e) = create_config_file(command_line_options) {
+            eprintln!("Issue creating {} due to {}", CONFIG_FILE, e);
+        }
+    }
+
     let (use_env_var, token_string) = use_env_var();
-    //create the file if env_statu s= false, config doenst exists, and the create config option was set
-    //create_config_file(map).unwrap();
     let client = Client::new();
     verify_api_connection(client, token_string.as_str()).unwrap();
-    // match verify_api_connection(client, "token_string") {
-    //     Ok(_) => todo!(),
-    //     Err(_) => todo!(),
-    // }
 }
