@@ -30,18 +30,16 @@ impl Api {
 
     pub fn verify_api_connection(&self) -> Result<(), anyhow::Error> {
         let url = self.create_url("user/api_token/")?;
-        let request = self.client.request(Method::GET, url.as_str());
-        let response = request.send()?;
-        let response_text = response.text()?;
-        let json_parse: Value = serde_json::from_str(&response_text.as_str())?;
-        let password = &json_parse["result"].to_string();
+        let response = self.client.request(Method::GET, url.as_str()).send()?;
+        let response_json: Value = serde_json::from_str(&response.text()?.as_str())?;
+        let password_json = &response_json["result"].to_string();
         let password_token = self.extract_from_token(TokenFields::Password)?;
-        let strip_alpha_numberic = Regex::new("[^A-Za-z0-9]")?;
-        let stripped_password = strip_alpha_numberic.replace_all(password, "");
-         if stripped_password.eq(&password_token){
+        let password_stripped = Regex::new("[^A-Za-z0-9]")?.replace_all(&password_json, "");
+         if password_stripped.eq(&password_token){
+            println!("No problem verifying token with Pinboard.in API");
              Ok(())
          } else {
-             Err(anyhow!("Issue")) 
+             Err(anyhow!("Issue verifying token with Pinboard.in API")) 
          }
     }
 
