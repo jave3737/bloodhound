@@ -1,24 +1,57 @@
 use anyhow::anyhow;
-use std::path::Path;
+use std::{path::Path, io::Write};
+use serde::{Serialize,Deserialize};
+use std::collections::BTreeMap;
+use std::io::Write;
 
-pub struct Config;
+#[derive(Debug,Serialize,Deserialize)]
+pub struct ConfigYaml{
+    api:String
+}
+
+pub struct Config{
+    config_yaml:ConfigYaml
+};
 
 const CONFIG_FILE: &str = "config.yaml";
 
 impl Config {
     pub fn new() -> Self {
-        //todo!()
-        Self{}
+        Self{
+            config_yaml: ConfigYaml{
+                api:String::new()
+            } 
+        }
     }
 
-    pub fn config_file_exists(&self) -> bool {
+    pub fn load(&self) -> bool {
+        todo!()
+    }
+
+    pub fn exists(&self) -> bool {
     	Path::new(CONFIG_FILE).exists()
     }
 
-    pub fn create_config_file(&self) -> Result<(), anyhow::Error> {
+    pub fn create_empty(&self) -> Result<(), anyhow::Error> {
     	match std::fs::File::create(CONFIG_FILE) {
-        Ok(o) => Ok(()),
+        Ok(o) => {
+            let mut yaml = BTreeMap::new();
+            yaml.insert("api", "<Paste API Token Here>");
+            let yaml_serialize = serde_yaml::to_string(&yaml)?;
+            o.write_all(yaml_serialize.as_bytes())?;
+            Ok(())
+        } ,
         Err(e) => Err(anyhow!("Error creating {} due to {}",CONFIG_FILE,e))
     	}
+    }
+
+    pub fn update_token(&self) -> Result<(), anyhow::Error> {
+        todo!()
+    }
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Self::new()
     }
 }

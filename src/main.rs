@@ -1,6 +1,4 @@
 use clap::{App, Arg};
-use std::collections::BTreeMap;
-use std::collections::HashMap;
 use std::env;
 use std::io::Write;
 use std::path::Path;
@@ -43,15 +41,27 @@ fn main() {
         )
         .get_matches();
 
-    let (_use_env_var, token_string) = use_env_var();
 
-    let config = Config::new();
+    let (use_env_var, token_string) = use_env_var();
+
     if let Some(s) = matches.value_of("config") {
-        config.create_config_file().unwrap();
+        config.create().unwrap();
     }
 
+    let config = Config::new();
     let pinboard = Api::new(token_string);
+    
+    if use_env_var {
+        todo!("here we do stuff")
+    } else {
+        if config.exists(){
+            todo!("attempt to read config file settings")
+        } else {
+            todo!("create a blank config file")
+        }
+    }
+
     if matches.is_present("test") {
-        pinboard.verify_api_connection();
+        pinboard.verify();
     }
 }
