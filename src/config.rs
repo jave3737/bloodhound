@@ -2,7 +2,6 @@ use anyhow::anyhow;
 use std::{path::Path, io::Write};
 use serde::{Serialize,Deserialize};
 use std::collections::BTreeMap;
-use std::io::Write;
 
 #[derive(Debug,Serialize,Deserialize)]
 pub struct ConfigYaml{
@@ -11,7 +10,7 @@ pub struct ConfigYaml{
 
 pub struct Config{
     config_yaml:ConfigYaml
-};
+}
 
 const CONFIG_FILE: &str = "config.yaml";
 
@@ -32,9 +31,9 @@ impl Config {
     	Path::new(CONFIG_FILE).exists()
     }
 
-    pub fn create_empty(&self) -> Result<(), anyhow::Error> {
+    pub fn create_blank(&self) -> Result<(), anyhow::Error> {
     	match std::fs::File::create(CONFIG_FILE) {
-        Ok(o) => {
+        Ok(mut o) => {
             let mut yaml = BTreeMap::new();
             yaml.insert("api", "<Paste API Token Here>");
             let yaml_serialize = serde_yaml::to_string(&yaml)?;

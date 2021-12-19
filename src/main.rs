@@ -1,12 +1,11 @@
+use crate::config::*;
+use crate::pinboard::*;
 use clap::{App, Arg};
 use std::env;
-use std::io::Write;
 use std::path::Path;
-use crate::pinboard::*;
-use crate::config::*;
 
-mod pinboard;
 mod config;
+mod pinboard;
 
 fn use_env_var() -> (bool, String) {
     let status: bool;
@@ -41,20 +40,19 @@ fn main() {
         )
         .get_matches();
 
-
     let (use_env_var, token_string) = use_env_var();
-
-    if let Some(s) = matches.value_of("config") {
-        config.create().unwrap();
-    }
 
     let config = Config::new();
     let pinboard = Api::new(token_string);
-    
+
+    if let Some(s) = matches.value_of("config") {
+        config.create_blank().unwrap();
+    }
+
     if use_env_var {
         todo!("here we do stuff")
     } else {
-        if config.exists(){
+        if config.exists() {
             todo!("attempt to read config file settings")
         } else {
             todo!("create a blank config file")
