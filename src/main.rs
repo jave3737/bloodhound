@@ -5,19 +5,10 @@ use std::env;
 use std::io::Write;
 use std::path::Path;
 use crate::pinboard::*;
+use crate::config::*;
 
 mod pinboard;
-
-const CONFIG_FILE: &str = "config.yaml";
-
-fn create_config_file(file: &str) -> Result<(), anyhow::Error> {
-    if Path::new(file).exists() == true {
-        println!("{} already exists, will not overwrite", CONFIG_FILE);
-    } else {
-        std::fs::File::create(file)?;
-    }
-    Ok(())
-}
+mod config;
 
 fn use_env_var() -> (bool, String) {
     let status: bool;
@@ -53,11 +44,10 @@ fn main() {
         .get_matches();
 
     let (_use_env_var, token_string) = use_env_var();
+
+    let config = Config::new();
     if let Some(s) = matches.value_of("config") {
-        if let Err(e) = create_config_file(CONFIG_FILE){
-            eprintln!("Issue creating {} due to {}",CONFIG_FILE,e);
-        }
-        //add api token to config
+        config.create_config_file().unwrap();
     }
 
     let pinboard = Api::new(token_string);
