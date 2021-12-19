@@ -91,7 +91,7 @@ fn main() {
     let pinboard = Api::new(token_string);
 
     if let Ok(o) = pinboard.verify_api_connection() {
-        
+        println!("yipe");  
     }
     // if let Ok(o) = pinboard.extract_from_token(TokenFields::Password){
     //      println!("{:?}", o);

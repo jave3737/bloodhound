@@ -6,14 +6,15 @@ use regex::Regex;
 use reqwest::blocking::Client;
 use reqwest::header::USER_AGENT;
 use reqwest::{Method, StatusCode, Url};
-use serde_json::Value;
+use serde_json::{Value, json};
 
 pub const PINBOARD_URL: &str = "https://api.pinboard.in/v1/";
 
-pub enum TokenFields {
+enum TokenFields {
     Username,
     Password,
 }
+
 pub struct Api {
     client: Client,
     token: String,
@@ -33,16 +34,15 @@ impl Api {
         let response = request.send()?;
         let response_text = response.text()?;
         let json_parse: Value = serde_json::from_str(&response_text.as_str())?;
-        let password = &json_parse["result"];
+        let password = &json_parse["result"].to_string();
         let password_token = self.extract_from_token(TokenFields::Password)?;
-        println!("{:?}", password.to_string());
-        println!("{:?}", password_token);
-        // if password.to_string().eq(&password_token){
-        //     Ok(())
-        // } else {
-        //     Err(anyhow!("Issue")) 
-        // }
-        todo!()
+        let strip_alpha_numberic = Regex::new("[^A-Za-z0-9]")?;
+        let stripped_password = strip_alpha_numberic.replace_all(password, "");
+         if stripped_password.eq(&password_token){
+             Ok(())
+         } else {
+             Err(anyhow!("Issue")) 
+         }
     }
 
     fn extract_from_token(&self, fields: TokenFields) -> Result<String, anyhow::Error> {
