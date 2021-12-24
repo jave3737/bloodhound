@@ -1,5 +1,6 @@
 use crate::config::*;
 use crate::pinboard::*;
+use clap::SubCommand;
 use clap::{App, Arg};
 use std::env;
 use std::path::Path;
@@ -24,20 +25,23 @@ fn main() {
         .version("1.0")
         .author("Alejandro Miranda <alejandro.miranda@hey.com>")
         .about("Dig through pinboard bookmarks")
-        .arg(
-            Arg::with_name("config")
+        .subcommand(
+            App::new("config")
+            .arg(Arg::with_name("create")
                 .short("c")
-                .long("config")
+                .long("create")
                 .takes_value(true)
-                .help("Create a config.yaml that stores your api token"),
-        )
-        .arg(
-            Arg::with_name("test")
-                .short("t")
-                .long("test")
+                .required(false)
+                .help("Create a blank config.yaml")
+                )
+            .arg(Arg::with_name("exist")
+                .short("e")
+                .long("exist")
                 .takes_value(false)
-                .help("Test your configuration"),
-        )
+                .required(false)
+                .help("Check if config file exists"))
+            .help("Manage settings")
+            )
         .get_matches();
 
     let (use_env_var, token_string) = use_env_var();
@@ -45,8 +49,14 @@ fn main() {
     let config = Config::new();
     let pinboard = Api::new(token_string);
 
-    if let Some(s) = matches.value_of("config") {
-        config.create_blank().unwrap();
+    if let Some(s) = matches.subcommand_matches("config") {
+        if s.is_present("exist") {
+            if config.exists() {
+                println!("config file exists")
+            } else {
+                println!("config does not exist")
+            }
+        }
     }
 
     if use_env_var {
