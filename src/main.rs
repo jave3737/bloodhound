@@ -25,26 +25,19 @@ fn main() {
         .version("1.0")
         .author("Alejandro Miranda <alejandro.miranda@hey.com>")
         .about("Dig through pinboard bookmarks")
-        .subcommand(
-            App::new("config")
-            .arg(Arg::with_name("create")
-                .short("c")
-                .long("create")
-                .takes_value(true)
-                .required(false)
-                .help("Create a blank config.yaml")
-                )
-            .arg(Arg::with_name("exist")
-                .short("e")
-                .long("exist")
-                .takes_value(false)
-                .required(false)
-                .help("Check if config file exists"))
-            .help("Manage settings")
-            )
+        .subcommand(SubCommand::with_name("config")
+            .arg(Arg::with_name("exists")
+                .long("exists").short("e").takes_value(false).help("Checks if a config file exists"))
+            .help("Manage user settings/configuration")
+        )
+        .subcommand(SubCommand::with_name("test")
+            .arg(Arg::with_name("verify")
+                .long("verify").short("v").takes_value(false).help("Verify that the currently configured api token can communicate with Pinboard.in"))
+            .help("Test/debug settings")
+        )
         .get_matches();
 
-    let (use_env_var, token_string) = use_env_var();
+    let (_use_env_var, token_string) = use_env_var();
 
     let config = Config::new();
     let pinboard = Api::new(token_string);
@@ -59,17 +52,19 @@ fn main() {
         }
     }
 
-    if use_env_var {
-        todo!("here we do stuff")
-    } else {
-        if config.exists() {
-            todo!("attempt to read config file settings")
-        } else {
-            todo!("create a blank config file")
+    if let Some(s) = matches.subcommand_matches("test") {
+        if s.is_present("verify") {
+            pinboard.verify().unwrap();
         }
     }
 
-    if matches.is_present("test") {
-        pinboard.verify();
-    }
+    // if use_env_var {
+    //     todo!("here we do stuff")
+    // } else {
+    //     if config.exists() {
+    //         todo!("attempt to read config file settings")
+    //     } else {
+    //         todo!("create a blank config file")
+    //     }
+    // }
 }
