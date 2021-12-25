@@ -3,6 +3,8 @@
 	[
 		{
 			"path": ".",
+			"folder_exclude_patterns": ["target",".git"],
+			"file_exclude_patterns": ["config.yaml"]
 		}
 	],
 	"settings":

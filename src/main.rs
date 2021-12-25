@@ -26,13 +26,18 @@ fn main() {
         .author("Alejandro Miranda <alejandro.miranda@hey.com>")
         .about("Dig through pinboard bookmarks")
         .subcommand(SubCommand::with_name("config")
-            .arg(Arg::with_name("exists")
-                .long("exists").short("e").takes_value(false).help("Checks if a config file exists"))
+            .arg(Arg::with_name("create")
+                .long("create").short("c").takes_value(false).help("Creates a blank config file")
+                )
+            .arg(Arg::with_name("update")
+                .long("update").short("u").takes_value(true).help("Update the current api token")
+                )
             .help("Manage user settings/configuration")
         )
         .subcommand(SubCommand::with_name("test")
             .arg(Arg::with_name("verify")
-                .long("verify").short("v").takes_value(false).help("Verify that the currently configured api token can communicate with Pinboard.in"))
+                .long("verify").short("v").takes_value(false).help("Verify that the currently configured api token can communicate with Pinboard.in")
+            )
             .help("Test/debug settings")
         )
         .get_matches();
@@ -43,12 +48,11 @@ fn main() {
     let pinboard = Api::new(token_string);
 
     if let Some(s) = matches.subcommand_matches("config") {
-        if s.is_present("exist") {
-            if config.exists() {
-                println!("config file exists")
-            } else {
-                println!("config does not exist")
-            }
+        if s.is_present("create") {
+            config.create_blank().unwrap();
+        }
+        if let Some(u) = s.value_of("update") {
+            config.update(u).unwrap();
         }
     }
 
