@@ -44,7 +44,10 @@ fn main() {
 
     let (_use_env_var, token_string) = use_env_var();
 
-    let config = Config::new();
+    let mut config = Config::new();
+    if config.exists() {
+        config.load().unwrap();
+    }
     let pinboard = Api::new(token_string);
 
     if let Some(s) = matches.subcommand_matches("config") {

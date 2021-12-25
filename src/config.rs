@@ -1,7 +1,8 @@
 use anyhow::anyhow;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::Serializer;
 use std::collections::BTreeMap;
+use std::io::Read;
 use std::{io::Write, path::Path};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -37,8 +38,13 @@ impl Config {
         Path::new(CONFIG_FILE).exists()
     }
 
-    pub fn load(&self) -> bool {
-        todo!()
+    pub fn load(&mut self) -> Result<(),anyhow::Error> {
+        let mut file = std::fs::File::open(CONFIG_FILE)?;
+        let mut buffer = String::new();
+        file.read_to_string(&mut buffer)?;
+        self.config_yaml = serde_yaml::from_str(&buffer)?;
+        println!("{:?}", &self.config_yaml);
+        Ok(())
     }
 
     pub fn new() -> Self {
