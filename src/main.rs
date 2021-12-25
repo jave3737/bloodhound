@@ -49,7 +49,7 @@ fn main() {
 
     if let Some(s) = matches.subcommand_matches("config") {
         if s.is_present("create") {
-            config.create_blank().unwrap();
+            config.create().unwrap();
         }
         if let Some(u) = s.value_of("update") {
             config.update(u).unwrap();

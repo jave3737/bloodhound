@@ -16,7 +16,7 @@ pub struct Config {
 const CONFIG_FILE: &str = "config.yaml";
 
 impl Config {
-    pub fn create_blank(&self) -> Result<(), anyhow::Error> {
+    pub fn create(&self) -> Result<(), anyhow::Error> {
         if !self.exists() {
             match std::fs::File::create(CONFIG_FILE) {
                 Ok(mut o) => {
