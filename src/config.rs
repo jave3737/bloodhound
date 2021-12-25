@@ -54,9 +54,6 @@ impl Config {
     }
 
     pub fn update(&self, token: &str) -> Result<(), anyhow::Error> {
-        let file = std::fs::File::open(CONFIG_FILE).unwrap();
-        let d: String = serde_yaml::from_reader(file).unwrap();
-        println!("{}",d);
         todo!()
     }
 }

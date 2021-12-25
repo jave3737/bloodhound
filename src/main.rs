@@ -26,9 +26,6 @@ fn main() {
         .author("Alejandro Miranda <alejandro.miranda@hey.com>")
         .about("Dig through pinboard bookmarks")
         .subcommand(SubCommand::with_name("config")
-            .arg(Arg::with_name("create")
-                .long("create").short("c").takes_value(false).help("Creates a blank config file")
-                )
             .arg(Arg::with_name("update")
                 .long("update").short("u").takes_value(true).help("Update the current api token")
                 )
@@ -42,28 +39,32 @@ fn main() {
         )
         .get_matches();
 
-    let (_use_env_var, token_string) = use_env_var();
+    let (use_env_var, mut token_string) = use_env_var();
 
     let mut config = Config::new();
     if config.exists() {
         config.load().unwrap();
+    } else {
+        config.create().unwrap();
+    }
+
+    // use from config file
+    if !use_env_var {
+        token_string = String::from("hello");
     }
     let pinboard = Api::new(token_string);
 
     if let Some(s) = matches.subcommand_matches("config") {
-        if s.is_present("create") {
-            config.create().unwrap();
-        }
         if let Some(u) = s.value_of("update") {
             config.update(u).unwrap();
         }
     }
 
-    if let Some(s) = matches.subcommand_matches("test") {
-        if s.is_present("verify") {
-            pinboard.verify().unwrap();
-        }
-    }
+    // if let Some(s) = matches.subcommand_matches("test") {
+    //     if s.is_present("verify") {
+    //         pinboard.verify().unwrap();
+    //     }
+    // }
 
     // if use_env_var {
     //     todo!("here we do stuff")
