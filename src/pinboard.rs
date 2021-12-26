@@ -19,12 +19,14 @@ enum TokenFields {
 pub struct Api {
     client: Client,
     token: String,
+    update_time: String,
 }
 
 impl Api {
     pub fn new(token: String) -> Self {
         Self {
             client: Client::new(),
+            update_time: String::new(),
             token,
         }
     }
@@ -64,4 +66,9 @@ impl Api {
         Ok(response_json)
     }
 
+    fn check_latest_update(&mut self) -> Result<(), anyhow::Error> {
+        let json = self.create_request("posts/update/")?; 
+        self.update_time = json["update_time"].to_string();
+        Ok(())
+    }
 }

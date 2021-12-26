@@ -45,8 +45,9 @@ fn main() {
     if !use_env_var {
         token_string = config.get_token();
     }
-    let pinboard = pinboard::Api::new(token_string);
+    let mut pinboard = pinboard::Api::new(token_string);
 
     // verify pinboard communication
     pinboard.verify().unwrap();
+
 }
