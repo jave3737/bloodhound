@@ -1,3 +1,9 @@
+use super::general::*;
+struct Bookmark {}
 
-pub struct yim {}
-
+impl Bookmark {
+	// add code here
+	fn new() -> Self {
+		Self{}
+	}		
+}

@@ -9,6 +9,7 @@ use serde_json::{Value};
 pub const PINBOARD_URL: &str = "https://api.pinboard.in/v1/";
 
 mod bookmark;
+mod general;
 
 enum TokenFields {
     Username,
