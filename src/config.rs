@@ -43,21 +43,16 @@ impl Config {
         let mut buffer = String::new();
         file.read_to_string(&mut buffer)?;
         self.config_yaml = serde_yaml::from_str(&buffer)?;
-        println!("{:?}", &self.config_yaml);
         Ok(())
     }
 
-    pub fn get_token(&self) -> String {
-        self.config_yaml.api
+    pub fn get_token(&mut self) -> String {
+        self.config_yaml.api.to_owned()
     }
 
     pub fn new() -> Self {
         Self {
             config_yaml: ConfigYaml { api: String::new() },
         }
-    }
-
-    pub fn update(&self, token: &str) -> Result<(), anyhow::Error> {
-        todo!()
     }
 }
