@@ -30,9 +30,7 @@ impl Api {
     }
 
     pub fn verify(&self) -> Result<(), anyhow::Error> {
-        let url = self.create_url("user/api_token/")?;
-        let response = self.client.request(Method::GET, url.as_str()).send()?;
-        let response_json: Value = serde_json::from_str(&response.text()?.as_str())?;
+        let response_json = self.create_request("user/api_token/")?;
         let password_json = &response_json["result"].to_string();
         let password_token = self.extract_from_token(TokenFields::Password)?;
         let password_stripped = Regex::new("[^A-Za-z0-9]")?.replace_all(&password_json, "");
@@ -55,13 +53,15 @@ impl Api {
         Ok(result)
     }
 
-    fn create_url(&self, endpoint_address: &str) -> Result<Url, anyhow::Error> {
+    fn create_request(&self, endpoint_address: &str) -> Result<Value, anyhow::Error> {
         let base = reqwest::Url::parse(PINBOARD_URL)?;
         let mut url = base.join(endpoint_address)?;
         url.query_pairs_mut()
             .append_pair("auth_token", self.token.as_str());
         url.query_pairs_mut().append_pair("format", "json");
-        Ok(url)
+        let response = self.client.request(Method::GET, url.as_str()).send()?;
+        let response_json:Value = serde_json::from_str(&response.text()?.as_str())?;
+        Ok(response_json)
     }
 
 }
