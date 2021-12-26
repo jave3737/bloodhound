@@ -3,7 +3,6 @@ use crate::pinboard::*;
 use clap::SubCommand;
 use clap::{App, Arg};
 use std::env;
-use std::path::Path;
 
 mod config;
 mod pinboard;
@@ -39,8 +38,10 @@ fn main() {
         )
         .get_matches();
 
+    // use environment variable
     let (use_env_var, mut token_string) = use_env_var();
 
+    // load or create config file
     let mut config = Config::new();
     if config.exists() {
         config.load().unwrap();
@@ -50,29 +51,12 @@ fn main() {
 
     // use from config file
     if !use_env_var {
-        token_string = String::from("hello");
+        token_string = config.get_token();
     }
     let pinboard = Api::new(token_string);
 
-    if let Some(s) = matches.subcommand_matches("config") {
-        if let Some(u) = s.value_of("update") {
-            config.update(u).unwrap();
-        }
+    // verify pinboard communication
+    if let Err(e) = pinboard.verify() {
+        eprintln!("Issue communicating with Pinboard.in, due to : {}", e);
     }
-
-    // if let Some(s) = matches.subcommand_matches("test") {
-    //     if s.is_present("verify") {
-    //         pinboard.verify().unwrap();
-    //     }
-    // }
-
-    // if use_env_var {
-    //     todo!("here we do stuff")
-    // } else {
-    //     if config.exists() {
-    //         todo!("attempt to read config file settings")
-    //     } else {
-    //         todo!("create a blank config file")
-    //     }
-    // }
 }

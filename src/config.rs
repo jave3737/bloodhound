@@ -47,6 +47,10 @@ impl Config {
         Ok(())
     }
 
+    pub fn get_token(&self) -> String {
+        self.config_yaml.api
+    }
+
     pub fn new() -> Self {
         Self {
             config_yaml: ConfigYaml { api: String::new() },
