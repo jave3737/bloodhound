@@ -1,6 +1,7 @@
 use crate::config::*;
 use crate::pinboard::*;
 use clap::SubCommand;
+use clap::crate_version;
 use clap::{App, Arg};
 use std::env;
 
@@ -56,7 +57,5 @@ fn main() {
     let pinboard = Api::new(token_string);
 
     // verify pinboard communication
-    if let Err(e) = pinboard.verify() {
-        eprintln!("Issue communicating with Pinboard.in, due to : {}", e);
-    }
+    pinboard.verify().unwrap();
 }
