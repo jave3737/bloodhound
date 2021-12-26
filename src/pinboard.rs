@@ -1,12 +1,9 @@
 extern crate log;
 use anyhow::anyhow;
-use log::Level::Info;
-use log::{info, log_enabled};
 use regex::Regex;
 use reqwest::blocking::Client;
-use reqwest::header::USER_AGENT;
-use reqwest::{Method, StatusCode, Url};
-use serde_json::{json, Value};
+use reqwest::{Method, Url};
+use serde_json::{Value};
 
 pub const PINBOARD_URL: &str = "https://api.pinboard.in/v1/";
 

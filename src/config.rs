@@ -1,6 +1,5 @@
 use anyhow::anyhow;
-use serde::{Deserialize, Deserializer, Serialize};
-use serde_json::Serializer;
+use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::io::Read;
 use std::{io::Write, path::Path};

@@ -1,7 +1,6 @@
 use crate::config::*;
 use crate::pinboard::*;
 use clap::SubCommand;
-use clap::crate_version;
 use clap::{App, Arg};
 use std::env;
 
@@ -21,7 +20,7 @@ fn use_env_var() -> (bool, String) {
 
 fn main() {
     env_logger::init();
-    let matches = App::new("Bloodhound")
+    let _matches = App::new("Bloodhound")
         .version("1.0")
         .author("Alejandro Miranda <alejandro.miranda@hey.com>")
         .about("Dig through pinboard bookmarks")
