@@ -63,4 +63,5 @@ impl Api {
         url.query_pairs_mut().append_pair("format", "json");
         Ok(url)
     }
+
 }

@@ -1,6 +1,9 @@
-#[derive(Debug)]
-pub struct General {}
+pub trait General {
+	fn new() -> Self;
 
-impl General {
-	// add code here
+	fn list(&self) -> bool;
+
+	fn add(&self) -> bool;
+
+	fn del(&self) -> bool;
 }
