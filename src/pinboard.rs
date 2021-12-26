@@ -1,4 +1,5 @@
 extern crate log;
+
 use anyhow::anyhow;
 use regex::Regex;
 use reqwest::blocking::Client;
@@ -6,6 +7,8 @@ use reqwest::{Method, Url};
 use serde_json::{Value};
 
 pub const PINBOARD_URL: &str = "https://api.pinboard.in/v1/";
+
+mod bookmark;
 
 enum TokenFields {
     Username,
