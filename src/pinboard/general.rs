@@ -1,7 +1,7 @@
 pub trait General {
 	fn new() -> Self;
 
-	fn list(&self) -> bool;
+	fn list(&self) -> Vec<String>;
 
 	fn add(&self) -> bool;
 

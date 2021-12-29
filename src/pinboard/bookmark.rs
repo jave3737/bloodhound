@@ -1,11 +1,21 @@
 //use super::general::*;
 // use crate::pinboard::general::*;
 use super::general::*;
-struct Bookmark {
-	url : String,
-	tags : Vec<String>,
-	date : String,
-	title : String,
+use serde::{Serialize,Deserialize};
+
+#[derive(Debug,Serialize,Deserialize)]
+pub struct Bookmark {
+	description: String,
+	extended: String, 
+	hash: String, 
+	href: String, 
+	tags: String, 
+	time: String,
+	toread: String,
+	// url : String,
+	// tags : Vec<String>,
+	// date : String,
+	// title : String,
 }
 
 impl Bookmark {}
@@ -15,7 +25,7 @@ impl General for Bookmark {
 	fn new() -> Self {
 		todo!();
 	}
-	fn list(&self) -> bool{
+	fn list(&self) -> Vec<String>{
 		todo!();
 	}
 

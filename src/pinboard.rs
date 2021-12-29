@@ -6,6 +6,8 @@ use reqwest::blocking::Client;
 use reqwest::{Method, Url};
 use serde_json::{Value};
 
+use crate::pinboard::bookmark::Bookmark;
+
 pub const PINBOARD_URL: &str = "https://api.pinboard.in/v1/";
 
 mod bookmark;
@@ -70,5 +72,20 @@ impl Api {
         let json = self.create_request("posts/update/")?; 
         self.update_time = json["update_time"].to_string();
         Ok(())
+    }
+
+    pub fn get_recent(&mut self) -> Result<Vec<bookmark::Bookmark>, anyhow::Error> {
+        let json = self.create_request("posts/recent")?;
+        let json_array = json["posts"].as_array().unwrap().to_owned();
+        // let json_array_len = json_array.len();
+
+        let bookmarks: Vec<Bookmark> = Vec::new();
+        for json_object in json_array {
+            if json_object.is_object(){
+                let test: Bookmark = serde_json::from_value(json_object).unwrap();
+                println!("{:?}", test);
+            }
+        }
+        Ok(bookmarks)
     }
 }

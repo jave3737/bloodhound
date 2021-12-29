@@ -50,4 +50,7 @@ fn main() {
     // verify pinboard communication
     pinboard.verify().unwrap();
 
+    // show list of recent bookmarks
+    pinboard.get_recent().unwrap();
+
 }
