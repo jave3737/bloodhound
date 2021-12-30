@@ -51,6 +51,6 @@ fn main() {
     pinboard.verify().unwrap();
 
     // show list of recent bookmarks
-    pinboard.get_recent().unwrap();
+    pinboard.get_recent(100).unwrap();
 
 }
