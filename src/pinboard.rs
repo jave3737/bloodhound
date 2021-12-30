@@ -4,7 +4,7 @@ use anyhow::anyhow;
 use regex::Regex;
 use reqwest::blocking::Client;
 use reqwest::{Method, Url};
-use serde_json::{Value};
+use serde_json::Value;
 
 use crate::pinboard::bookmark::Bookmark;
 
@@ -18,18 +18,45 @@ enum TokenFields {
     Password,
 }
 
+enum BookmarkRequests {
+    Update,
+    Add,
+    Delete,
+    Get,
+    Recent,
+    Dates, 
+    All,
+    Suggest,
+}
+
+enum TagRequests {
+    Get,
+    Delete,
+    Rename,
+}
+
+enum UserRequests {
+    Secret,
+    ApiToken,
+}
+
+enum NoteRequest {
+    List,
+    ID,
+}
+
 enum DataTypes {
     Default,
-    Tag, 
-    Url, 
+    Tag,
+    Url,
     Title,
-    Text, 
+    Text,
     Datetime,
-    Date, 
+    Date,
     YesNo,
     Md5,
     Integer(i32),
-    Format
+    Format,
 }
 
 pub struct Api {
@@ -71,7 +98,11 @@ impl Api {
         Ok(result)
     }
 
-    fn create_request(&self, datatype:DataTypes ,endpoint_address: &str) -> Result<Value, anyhow::Error> {
+    fn create_request(
+        &self,
+        datatype: DataTypes,
+        endpoint_address: &str,
+    ) -> Result<Value, anyhow::Error> {
         let base = reqwest::Url::parse(PINBOARD_URL)?;
         let mut url = base.join(endpoint_address)?;
         url.query_pairs_mut()
@@ -81,28 +112,32 @@ impl Api {
         match datatype {
             DataTypes::Integer(o) => {
                 println!("number : {}", o);
-                url.query_pairs_mut().append_pair("count", o.to_string().as_str());
-            },
+                url.query_pairs_mut()
+                    .append_pair("count", o.to_string().as_str());
+            }
             _ => {}
         }
         println!("{:?}", url);
         let response = self.client.request(Method::GET, url.as_str()).send()?;
-        let response_json:Value = serde_json::from_str(&response.text()?.as_str())?;
+        let response_json: Value = serde_json::from_str(&response.text()?.as_str())?;
         Ok(response_json)
     }
 
     fn check_latest_update(&mut self) -> Result<(), anyhow::Error> {
-        let json = self.create_request(DataTypes::Default, "posts/update/")?; 
+        let json = self.create_request(DataTypes::Default, "posts/update/")?;
         self.update_time = json["update_time"].to_string();
         Ok(())
     }
 
-    pub fn get_recent(&mut self, number_of_entries: i32) -> Result<Vec<bookmark::Bookmark>, anyhow::Error> {
+    pub fn get_recent(
+        &mut self,
+        number_of_entries: i32,
+    ) -> Result<Vec<bookmark::Bookmark>, anyhow::Error> {
         let json = self.create_request(DataTypes::Integer(number_of_entries), "posts/recent")?;
         let json_array = json["posts"].as_array().unwrap().to_owned();
         let mut bookmarks: Vec<Bookmark> = Vec::new();
         for json_object in json_array {
-            if json_object.is_object(){
+            if json_object.is_object() {
                 bookmarks.push(serde_json::from_value(json_object)?)
             }
         }

@@ -12,10 +12,6 @@ pub struct Bookmark {
 	tags: String, 
 	time: String,
 	toread: String,
-	// url : String,
-	// tags : Vec<String>,
-	// date : String,
-	// title : String,
 }
 
 impl Bookmark {}
