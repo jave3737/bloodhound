@@ -3,12 +3,12 @@ extern crate log;
 use std::arch;
 use std::env;
 
+use crate::pinboard::bookmark::Bookmark;
 use anyhow::anyhow;
 use regex::Regex;
 use reqwest::blocking::Client;
 use reqwest::{Method, Url};
 use serde_json::Value;
-use crate::pinboard::bookmark::Bookmark;
 
 pub const PINBOARD_URL: &str = "https://api.pinboard.in/v1/";
 pub const PINBOARD_API: &str = "PINBOARD_API";
@@ -73,7 +73,7 @@ impl Api {
 
     fn create_request(
         &self,
-        argument_pairs: Vec<[&str;2]>,
+        argument_pairs: Vec<[&str; 2]>,
         endpoint_address: &str,
     ) -> Result<Value, anyhow::Error> {
         let base = reqwest::Url::parse(PINBOARD_URL)?;
@@ -101,7 +101,10 @@ impl Api {
         &mut self,
         number_of_entries: i32,
     ) -> Result<Vec<bookmark::Bookmark>, anyhow::Error> {
-        let json = self.create_request(Vec::from([["count",number_of_entries.to_string().as_str()]]), "posts/recent")?;
+        let json = self.create_request(
+            Vec::from([["count", number_of_entries.to_string().as_str()]]),
+            "posts/recent",
+        )?;
         let json_array = json["posts"].as_array().unwrap().to_owned();
         let mut bookmarks: Vec<Bookmark> = Vec::new();
         for json_object in json_array {
@@ -115,24 +118,25 @@ impl Api {
 
 #[cfg(test)]
 mod test {
-    use super::{Api, use_env_var};
+    use super::{use_env_var, Api};
+    use rand::Rng;
     #[test]
-    fn verify(){
-        let ( _ , token_string) = use_env_var();    
+    fn verify() {
+        let (_, token_string) = use_env_var();
         let pinboard = Api::new(token_string);
         if let Ok(o) = pinboard.verify() {
-        assert_eq!(o,())
+            assert_eq!(o, ())
         }
     }
 
     #[test]
-    fn recent(){
-        let ( _ , token_string) = use_env_var();
+    fn recent() {
+        let (_, token_string) = use_env_var();
         let mut pinboard = Api::new(token_string);
-        let number_of_entries = 100;
+        let number_of_entries: i32 = rand::thread_rng().gen_range(0..100);
         let number_of_entries_usize = usize::try_from(number_of_entries).unwrap();
         if let Ok(o) = pinboard.get_recent(number_of_entries) {
-            assert_eq!(number_of_entries_usize,o.len())
+            assert_eq!(number_of_entries_usize, o.len())
         }
     }
 }
