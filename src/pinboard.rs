@@ -91,7 +91,7 @@ impl Api {
         Ok(response_json)
     }
 
-    fn check_latest_update(&mut self) -> Result<(), anyhow::Error> {
+    pub fn check_latest_update(&mut self) -> Result<(), anyhow::Error> {
         let json = self.create_request(Vec::new(), "posts/update/")?;
         self.update_time = json["update_time"].to_string();
         Ok(())
@@ -113,6 +113,10 @@ impl Api {
             }
         }
         Ok(bookmarks)
+    }
+
+    pub fn add<T: general::General>(item: T) -> String {
+        item.get_url()
     }
 }
 

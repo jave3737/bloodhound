@@ -17,19 +17,16 @@ pub struct Bookmark {
 impl Bookmark {}
 
 impl General for Bookmark {
-	// add code here
+
 	fn new() -> Self {
 		todo!();
 	}
-	fn list(&self) -> Vec<String>{
-		todo!();
+	
+	fn get_tags(&self) -> Vec<String> {
+		todo!()	
 	}
-
-	fn add(&self) -> bool {
-		todo!();
-	}
-
-	fn del(&self) -> bool {
-		todo!();
+	
+	fn get_url(&self) -> String {
+		self.href.to_owned()
 	}
 }

@@ -1,9 +1,7 @@
 pub trait General {
 	fn new() -> Self;
 
-	fn list(&self) -> Vec<String>;
+	fn get_url(&self) -> String;
 
-	fn add(&self) -> bool;
-
-	fn del(&self) -> bool;
+	fn get_tags(&self) -> Vec<String>;
 }
