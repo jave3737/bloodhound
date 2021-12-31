@@ -4,7 +4,7 @@
 		{
 			"path": ".",
 			"folder_exclude_patterns": ["target",".git"],
-			"file_exclude_patterns": ["config.yaml"]
+			"file_exclude_patterns": ["config.yaml"],
 		}
 	],
 	"settings":
@@ -17,4 +17,96 @@
 			},
 		},
 	},
+	"build_systems":
+	[
+		{
+			"command": "build",
+			"keyfiles":
+			[
+				"Cargo.toml"
+			],
+			"name": "Custom Cargo Build",
+			"selector": "source.rust",
+			"target": "cargo_exec",
+			"variants":
+			[
+				{
+					"command": "test",
+					"command_info":
+					{
+					},
+					"name": "test-debug",
+					"settings":
+					{
+						"env":
+						{
+							"RUST_LOG" : "Debug"
+						},
+						"extra_cargo_args": "",
+						"extra_run_args": "",
+						"features": "",
+						"no_default_features": false,
+						"release": false,
+						"target": "--bin bloodhound",
+						"target_triple": "",
+						"toolchain": "",
+						"working_dir": "/home/jave3737/bloodhound"
+					},
+					"target": "cargo_exec"
+				},
+				{
+					"command": "auto",
+					"name": "Automatic"
+				},
+				{
+					"command": "run",
+					"name": "Run"
+				},
+				{
+					"command": "run",
+					"command_info":
+					{
+						"wants_run_args": true
+					},
+					"name": "Run (with args)..."
+				},
+				{
+					"command": "check",
+					"name": "Check"
+				},
+				{
+					"command": "test",
+					"name": "Test"
+				},
+				{
+					"command": "test",
+					"command_info":
+					{
+						"wants_run_args": true
+					},
+					"name": "Test (with args)..."
+				},
+				{
+					"command": "bench",
+					"name": "Bench"
+				},
+				{
+					"command": "clean",
+					"name": "Clean"
+				},
+				{
+					"command": "doc",
+					"name": "Document"
+				},
+				{
+					"command": "clippy",
+					"name": "Clippy"
+				},
+				{
+					"command": "script",
+					"name": "Script"
+				}
+			]
+		}
+	],
 }
