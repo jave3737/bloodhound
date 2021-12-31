@@ -1,20 +1,9 @@
 use clap::SubCommand;
 use clap::{App, Arg};
-use std::env;
 
 mod config;
-mod pinboard;
+pub mod pinboard; 
 
-fn use_env_var() -> (bool, String) {
-    let status: bool;
-    let env_api_token = env::var("PINBOARD_API").unwrap_or("none".to_string());
-    if env_api_token.to_owned().eq("none") {
-        status = false;
-    } else {
-        status = true;
-    }
-    return (status, env_api_token);
-}
 
 fn main() {
     env_logger::init();
@@ -31,7 +20,7 @@ fn main() {
         .get_matches();
 
     // use environment variable
-    let (use_env_var, mut token_string) = use_env_var();
+    let (use_env_var, mut token_string) = pinboard::use_env_var();
 
     // load or create config file
     let mut config = config::Config::new();
@@ -46,11 +35,4 @@ fn main() {
         token_string = config.get_token();
     }
     let mut pinboard = pinboard::Api::new(token_string);
-
-    // verify pinboard communication
-    pinboard.verify().unwrap();
-
-    // show list of recent bookmarks
-    pinboard.get_recent(100).unwrap();
-
 }

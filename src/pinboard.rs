@@ -1,16 +1,17 @@
 extern crate log;
 
 use std::arch;
+use std::env;
 
 use anyhow::anyhow;
 use regex::Regex;
 use reqwest::blocking::Client;
 use reqwest::{Method, Url};
 use serde_json::Value;
-
 use crate::pinboard::bookmark::Bookmark;
 
 pub const PINBOARD_URL: &str = "https://api.pinboard.in/v1/";
+pub const PINBOARD_API: &str = "PINBOARD_API";
 
 mod bookmark;
 mod general;
@@ -18,6 +19,17 @@ mod general;
 enum TokenFields {
     Username,
     Password,
+}
+
+pub fn use_env_var() -> (bool, String) {
+    let status: bool;
+    let env_api_token = env::var(PINBOARD_API).unwrap_or("none".to_string());
+    if env_api_token.to_owned().eq("none") {
+        status = false;
+    } else {
+        status = true;
+    }
+    return (status, env_api_token);
 }
 
 pub struct Api {
@@ -97,7 +109,30 @@ impl Api {
                 bookmarks.push(serde_json::from_value(json_object)?)
             }
         }
-        println!("{:?}", bookmarks.len());
         Ok(bookmarks)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::{Api, use_env_var};
+    #[test]
+    fn verify(){
+        let ( _ , token_string) = use_env_var();    
+        let pinboard = Api::new(token_string);
+        if let Ok(o) = pinboard.verify() {
+        assert_eq!(o,())
+        }
+    }
+
+    #[test]
+    fn recent(){
+        let ( _ , token_string) = use_env_var();
+        let mut pinboard = Api::new(token_string);
+        let number_of_entries = 100;
+        let number_of_entries_usize = usize::try_from(number_of_entries).unwrap();
+        if let Ok(o) = pinboard.get_recent(number_of_entries) {
+            assert_eq!(number_of_entries_usize,o.len())
+        }
     }
 }
