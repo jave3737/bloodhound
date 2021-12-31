@@ -1,25 +1,45 @@
 //use super::general::*;
 // use crate::pinboard::general::*;
 use super::general::*;
-use serde::{Serialize,Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug,Serialize,Deserialize)]
 pub struct Bookmark {
 	description: String,
-	extended: String, 
-	hash: String, 
 	href: String, 
-	tags: String, 
-	time: String,
-	toread: String,
+	additional_info: AdditionalInfo
 }
 
+#[derive(Debug,Serialize,Deserialize)]
+pub struct AdditionalInfo {
+	extended: Option<String>,
+	hash: Option<String>,
+	tags: Option<String>,
+	time: Option<String>,
+	toread: Option<String>
+}
+
+impl Default for AdditionalInfo {
+	fn default() -> Self {
+	    AdditionalInfo{
+	    	extended: Default::default(),
+	    	hash: Default::default(),
+	    	tags: Default::default(),
+	    	time: Default::default(),
+	    	toread: Default::default()
+	    }
+	}
+}
 impl Bookmark {}
 
 impl General for Bookmark {
 
-	fn new() -> Self {
-		todo!();
+	fn new(href:String, description:String) -> Self {
+		Bookmark{
+			href,
+			description,
+			additional_info: Default::default()
+		}	
 	}
 	
 	fn get_tags(&self) -> Vec<String> {

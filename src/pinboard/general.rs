@@ -1,5 +1,5 @@
 pub trait General {
-	fn new() -> Self;
+	fn new(href: String, description: String) -> Self;
 
 	fn get_url(&self) -> String;
 
