@@ -15,30 +15,58 @@ pub struct Bookmark {
 }
 
 #[derive(Debug)]
-struct BookmarkBuilder {
+pub struct BookmarkBuilder {
     url: String,
     description: String,
     bookmark_builder_optional: BookmarkBuilderOptional
 }
 
+#[derive(Debug)]
+struct BookmarkBuilderOptional {
+    extended: String,
+    tags: String,
+    dt: String,
+    replace: bool,
+    shared: bool,
+    toread: bool,
+}
+
+
 impl BookmarkBuilder {
-	fn new(url: String, description: String) -> Self {
+	pub fn new(url: String, description: String) -> Self {
 		Self{
 			url,
 			description,
 			bookmark_builder_optional: Default::default()
 		}
 	}
-}
+	pub fn set_toread(&mut self,toread: bool) {
+		self.bookmark_builder_optional.toread = toread
+	}
 
-#[derive(Debug)]
-struct BookmarkBuilderOptional {
-    extended: String,
-    tags: Vec<String>,
-    dt: String,
-    replace: bool,
-    shared: bool,
-    toread: bool,
+	pub fn set_shared(&mut self, shared: bool) {
+		self.bookmark_builder_optional.shared = shared
+	}
+
+	pub fn set_replace(&mut self, replace:bool) {
+		self.bookmark_builder_optional.replace = replace
+	}
+
+	pub fn set_extended(&mut self, extended:String) {
+		self.bookmark_builder_optional.extended = extended
+	}
+
+	pub fn set_dt(&mut self, dt: String){
+		self.bookmark_builder_optional.dt = dt
+	}
+
+	fn set_tags(&mut self, tags:Vec<String>){
+		let mut buffer = String::new();
+		 for n in tags{
+		 	buffer.push_str(n.as_str())
+		 }
+		 self.bookmark_builder_optional.tags = buffer
+	}
 }
 
 impl Default for BookmarkBuilderOptional {

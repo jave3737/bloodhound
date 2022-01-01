@@ -2,7 +2,7 @@ extern crate log;
 
 use std::env;
 
-use crate::pinboard::bookmark::Bookmark;
+use crate::pinboard::bookmark::*;
 use anyhow::anyhow;
 use log::{debug, info, log_enabled, Level};
 use regex::Regex;
@@ -125,10 +125,7 @@ impl Api {
 
 #[cfg(test)]
 mod test {
-    use super::{
-        bookmark::{self, Bookmark},
-        use_env_var, Api,
-    };
+    use super::{Api, TokenFields, bookmark::{self, Bookmark}, use_env_var};
     use log::{debug, info};
     use rand::Rng;
 
@@ -159,5 +156,16 @@ mod test {
             0
         };
         assert_eq!(number_of_entries_usize, result);
+    }
+
+    #[test]
+    fn build() {
+        init();
+        let (_, token_string) = use_env_var();
+        let mut pinboard = Api::new(token_string);
+        let mut bookmark = bookmark::BookmarkBuilder::new("hello".to_string(), "goodbye".to_string());
+        bookmark.set_toread(true);
+        bookmark.set_shared(false);
+        bookmark.set_replace(false);
     }
 }
