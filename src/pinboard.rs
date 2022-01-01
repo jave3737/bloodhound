@@ -160,10 +160,4 @@ mod test {
         };
         assert_eq!(number_of_entries_usize, result);
     }
-
-    // #[test]
-    // fn add_bookmark() {
-    //     let (_, token_string) = use_env_var();
-    //     let pinboard = Api::new(token_string);
-    // }
 }
