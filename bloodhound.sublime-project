@@ -35,15 +35,39 @@
 					"command_info":
 					{
 					},
-					"name": "Test-Debug",
+					"name": "Test-Info",
 					"settings":
 					{
 						"env":
 						{
-							"RUST_LOG" : "Debug"
+							"RUST_LOG" : "Info"
 						},
 						"extra_cargo_args": "",
-						"extra_run_args": "",
+						"extra_run_args": "--nocapture",
+						"features": "",
+						"no_default_features": false,
+						"release": false,
+						"target": "--bin bloodhound",
+						"target_triple": "",
+						"toolchain": "",
+						"working_dir": "/home/jave3737/bloodhound",
+					},
+					"target": "cargo_exec",
+				},
+				{
+					"command": "test",
+					"name": "Test-Debug",
+					"command_info":
+					{
+					},
+					"settings":
+					{
+						"env":
+						{
+							"RUST_LOG": "Debug"
+						},
+						"extra_cargo_args": "",
+						"extra_run_args": "--nocapture",
 						"features": "",
 						"no_default_features": false,
 						"release": false,
@@ -52,61 +76,69 @@
 						"toolchain": "",
 						"working_dir": "/home/jave3737/bloodhound"
 					},
-					"target": "cargo_exec"
+					"target": "cargo_exec",
 				},
 				{
 					"command": "auto",
-					"name": "Automatic"
+					"name": "Automatic",
 				},
 				{
 					"command": "run",
-					"name": "Run"
+					/*"command_info":
+					{
+						"wants_run_args": true
+					},*/
+					"name": "Run",
 				},
 				{
 					"command": "run",
+					"name": "Run (with args)...",
 					"command_info":
 					{
 						"wants_run_args": true
 					},
-					"name": "Run (with args)..."
 				},
 				{
 					"command": "check",
-					"name": "Check"
+					"name": "Check",
 				},
 				{
 					"command": "test",
-					"name": "Test"
+					/*"command_info":
+					{
+						"wants_run_args": true
+					},*/
+					"name": "Test",
 				},
 				{
 					"command": "test",
+					"name": "Test (with args)...",
 					"command_info":
 					{
 						"wants_run_args": true
 					},
-					"name": "Test (with args)..."
 				},
 				{
 					"command": "bench",
-					"name": "Bench"
+					"name": "Bench",
 				},
 				{
 					"command": "clean",
-					"name": "Clean"
+					"name": "Clean",
 				},
 				{
 					"command": "doc",
-					"name": "Document"
+					"name": "Document",
 				},
 				{
 					"command": "clippy",
-					"name": "Clippy"
+					"name": "Clippy",
 				},
 				{
 					"command": "script",
 					"name": "Script"
-				}
-			]
+				},
+			],
 		}
 	],
 }

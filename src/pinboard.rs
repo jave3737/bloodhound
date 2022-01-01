@@ -106,7 +106,7 @@ impl Api {
             Vec::from([["count", number_of_entries.to_string().as_str()]]),
             "posts/recent",
         )?;
-        debug!("hello alejandro");
+        info!("hello alejandro");
         let json_array = json["posts"].as_array().unwrap().to_owned();
         let mut bookmarks: Vec<Bookmark> = Vec::new();
         for json_object in json_array {
@@ -155,7 +155,7 @@ mod test {
         let number_of_entries_usize = usize::try_from(number_of_entries).unwrap();
         let result = if let Ok(o) = pinboard.get_recent(number_of_entries) {
             o.len()
-        }else {
+        } else {
             0
         };
         assert_eq!(number_of_entries_usize, result);
